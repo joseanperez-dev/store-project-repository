@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,18 +18,22 @@ public class Product {
     String name;
     String description;
 
+    LocalDateTime creationDate;
+
     public Product() {
     }
 
-    public Product(Long id, String name, String description) {
+    public Product(Long id, String name, String description, LocalDateTime creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.creationDate = creationDate;
     }
 
-    public Product(String name, String description) {
+    public Product(String name, String description, LocalDateTime creationDate) {
         this.name = name;
         this.description = description;
+        this.creationDate = creationDate;
     }
 
     public Long getId() {
@@ -54,4 +60,11 @@ public class Product {
         this.description = description;
     }
 
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 }

@@ -4,11 +4,13 @@ public class ProductResponseDTO {
     public Long id;
     public String name;
     public String description;
+    public String creationDate;
 
-    public ProductResponseDTO(Long id, String name, String description) {
+    public ProductResponseDTO(Long id, String name, String description, String creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.creationDate = creationDate;
     }
 
     public Long getId() {
@@ -33,5 +35,13 @@ public class ProductResponseDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
     }
 }
