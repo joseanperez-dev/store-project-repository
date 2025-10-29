@@ -1,9 +1,12 @@
 package store.controllers;
 
 import org.springframework.web.bind.annotation.*;
+import store.dto.ProductRequestDTO;
+import store.dto.ProductResponseDTO;
 import store.models.Product;
 import store.services.ProductService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,22 +19,40 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAll() {
-        return productService.getAll();
+    public List<ProductResponseDTO> getAll() {
+        List<Product> products = productService.getAll();
+        List<ProductResponseDTO> productDtos = new ArrayList<>();
+        for (Product product : products) {
+            ProductResponseDTO productDto = new ProductResponseDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription()
+            );
+            productDtos.add(productDto);
+        }
+        return productDtos;
     }
 
     @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id) {
-        return productService.getById(id);
+    public ProductResponseDTO getById(@PathVariable Long id) {
+        Product product = productService.getById(id);
+        ProductResponseDTO productDto = new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getDescription()
+        );
+        return productDto;
     }
 
     @PostMapping
-    public void add(@RequestBody Product product) {
+    public void add(@RequestBody ProductRequestDTO productDto) {
+        Product product = new Product(productDto.getName(), productDto.getDescription());
         productService.add(product);
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody Product product) {
+    public void update(@PathVariable Long id, @RequestBody ProductRequestDTO productDto) {
+        Product product = new Product(productDto.getName(), productDto.getDescription());
         productService.update(id, product);
     }
 
