@@ -3,6 +3,7 @@ package store.controllers;
 import org.springframework.web.bind.annotation.*;
 import store.dto.CategoryRequestDTO;
 import store.dto.CategoryResponseDTO;
+import store.dto.ResponseDTO;
 import store.models.Category;
 import store.services.CategoryService;
 
