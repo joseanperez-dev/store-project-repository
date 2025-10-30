@@ -1,8 +1,14 @@
 # FASE 01
 
+## Relación Product y Category
+
+En esta etapa de la fase 1 se va a implementar todo lo relacionado con la entidad Category: repositorio, servicio, controlador y DTOs.
+Además, se va a establecer la relación OneToMany entre Product y Category, siendo las instancias de esta última las que tendrán una lista
+con los productos.
+
 ## Primeros pasos
 
-En esta primera fase pretende crear una pequeña aplicación de base de datos que simule la
+En esta primera fase se pretende crear una pequeña aplicación de base de datos que simule la
 gestión de productos de una tienda. De momento, la única entidad que se va a crear es la de los productos.
 Ya en la siguiente fase se añadirá otra entidad para expandir un poco el esquema de la base de datos.
 
