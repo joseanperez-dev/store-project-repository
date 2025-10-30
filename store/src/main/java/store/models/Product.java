@@ -1,9 +1,6 @@
 package store.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,20 +17,26 @@ public class Product {
 
     LocalDateTime creationDate;
 
+    @ManyToOne
+    @JoinColumn(name = "category")
+    Category category;
+
     public Product() {
     }
 
-    public Product(Long id, String name, String description, LocalDateTime creationDate) {
+    public Product(Long id, String name, String description, LocalDateTime creationDate, Category category) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.creationDate = creationDate;
+        this.category = category;
     }
 
-    public Product(String name, String description, LocalDateTime creationDate) {
+    public Product(String name, String description, LocalDateTime creationDate, Category category) {
         this.name = name;
         this.description = description;
         this.creationDate = creationDate;
+        this.category = category;
     }
 
     public Long getId() {
@@ -66,5 +69,13 @@ public class Product {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

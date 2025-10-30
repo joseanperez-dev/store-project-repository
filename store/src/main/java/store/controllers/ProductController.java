@@ -3,7 +3,9 @@ package store.controllers;
 import org.springframework.web.bind.annotation.*;
 import store.dto.ProductRequestDTO;
 import store.dto.ProductResponseDTO;
+import store.models.Category;
 import store.models.Product;
+import store.services.CategoryService;
 import store.services.ProductService;
 
 import java.time.LocalDateTime;
@@ -15,9 +17,11 @@ import java.util.List;
 @RequestMapping("products")
 public class ProductController {
     private ProductService productService;
+    private CategoryService categoryService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, CategoryService categoryService) {
         this.productService = productService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -32,7 +36,8 @@ public class ProductController {
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
-                    formattedDate
+                    formattedDate,
+                    product.getCategory().getName()
             );
             productDtos.add(productDto);
         }
@@ -49,20 +54,23 @@ public class ProductController {
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
-                formattedDate
+                formattedDate,
+                product.getCategory().getName()
         );
         return productDto;
     }
 
     @PostMapping
     public void add(@RequestBody ProductRequestDTO productDto) {
-        Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now());
+        Category category = categoryService.getById(productDto.getCategoryId());
+        Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now(), category);
         productService.add(product);
     }
 
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody ProductRequestDTO productDto) {
-        Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now());
+        Category category = categoryService.getById(productDto.getCategoryId());
+        Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now(), category);
         productService.update(id, product);
     }
 

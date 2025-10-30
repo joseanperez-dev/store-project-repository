@@ -1,11 +1,10 @@
 package store.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Category {
@@ -17,6 +16,9 @@ public class Category {
     String description;
 
     LocalDateTime creationDate;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    List<Product> products = new ArrayList<>();
 
     public Category() {
     }
