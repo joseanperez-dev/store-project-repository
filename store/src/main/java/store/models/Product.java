@@ -12,6 +12,9 @@ public class Product extends GenericData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    Double price;
+    Integer stock;
+
     @ManyToOne
     @JoinColumn(name = "category")
     Category category;
@@ -19,26 +22,25 @@ public class Product extends GenericData {
     public Product() {
     }
 
-    public Product(Long id, String name, String description, LocalDateTime creationDate, Category category) {
+    public Product(Long id, String name, String description, Double price, Integer stock, LocalDateTime creationDate, Category category) {
+        super(name, description, creationDate);
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
+        this.price = price;
+        this.stock = stock;
         this.category = category;
     }
 
-    public Product(String name, String description, LocalDateTime creationDate, Category category) {
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
+    public Product(String name, String description, Double price, Integer stock, LocalDateTime creationDate, Category category) {
+        super(name, description, creationDate);
+        this.price = price;
+        this.stock = stock;
         this.category = category;
     }
 
-    public Product(String name, String description, LocalDateTime creationDate, LocalDateTime updateDate, Category category) {
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
-        this.updateDate = updateDate;
+    public Product(String name, String description, Double price, Integer stock, LocalDateTime creationDate, LocalDateTime updateDate, Category category) {
+        super(name, description, creationDate, updateDate);
+        this.price = price;
+        this.stock = stock;
         this.category = category;
     }
 
@@ -64,6 +66,22 @@ public class Product extends GenericData {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 
     public LocalDateTime getCreationDate() {

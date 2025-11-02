@@ -36,6 +36,8 @@ public class ProductController {
                     product.getName(),
                     product.getDescription(),
                     product.getCategory().getName(),
+                    product.getPrice(),
+                    product.getStock(),
                     dates[0],
                     dates[1]
             );
@@ -53,6 +55,8 @@ public class ProductController {
                 product.getName(),
                 product.getDescription(),
                 product.getCategory().getName(),
+                product.getPrice(),
+                product.getStock(),
                 dates[0],
                 dates[1]
         );
@@ -65,7 +69,14 @@ public class ProductController {
         if (category == null) {
             throw new Exception("La categoría no existe");
         }
-        Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now(), category);
+        Product product = new Product(
+                productDto.getName(),
+                productDto.getDescription(),
+                productDto.getPrice(),
+                productDto.getStock(),
+                LocalDateTime.now(),
+                category
+        );
         productService.add(product);
     }
 
@@ -76,6 +87,8 @@ public class ProductController {
         Product product = new Product(
                 productDto.getName(),
                 productDto.getDescription(),
+                productDto.getPrice(),
+                productDto.getStock(),
                 productToUpdate.getCreationDate(),
                 LocalDateTime.now(), category
         );

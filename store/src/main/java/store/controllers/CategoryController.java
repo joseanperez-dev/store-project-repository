@@ -56,9 +56,11 @@ public class CategoryController {
                         product.getId(),
                         product.getName(),
                         product.getDescription(),
+                        category.getName(),
+                        product.getPrice(),
+                        product.getStock(),
                         datesProduct[0],
-                        datesProduct[1],
-                        category.getName()
+                        datesProduct[1]
                 );
                 productDtos.add(productDto);
             }
@@ -101,9 +103,11 @@ public class CategoryController {
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
+                    category.getName(),
+                    product.getPrice(),
+                    product.getStock(),
                     datesProduct[0],
-                    datesProduct[1],
-                    category.getName()
+                    datesProduct[1]
             );
             productDtos.add(productDto);
         }
