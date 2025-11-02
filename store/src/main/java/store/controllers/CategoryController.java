@@ -1,8 +1,11 @@
 package store.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import store.dto.*;
 import store.models.Category;
+import store.models.GenericData;
 import store.models.Product;
 import store.services.CategoryService;
 
@@ -14,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("categories")
 public class CategoryController {
+    private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
+
     private CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
@@ -25,14 +30,13 @@ public class CategoryController {
         List<Category> categories = categoryService.getAll();
         List<CategoryResponseDTO> categoryDtos = new ArrayList<>();
         for (Category category : categories) {
-            LocalDateTime date = category.getCreationDate();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            String formattedDate = date.format(formatter);
+            String[] dates = formatDate(category);
             CategoryResponseDTO categoryDto = new CategoryResponseDTO(
                     category.getId(),
                     category.getName(),
                     category.getDescription(),
-                    formattedDate
+                    dates[0],
+                    dates[1]
             );
             categoryDtos.add(categoryDto);
         }
@@ -44,18 +48,16 @@ public class CategoryController {
         List<Category> categories = categoryService.getAll();
         List<CategoryDetailsResponseDTO> categoryDtos = new ArrayList<>();
         for (Category category : categories) {
-            LocalDateTime date = category.getCreationDate();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            String formattedDate = date.format(formatter);
+            String[] datesCategory = formatDate(category);
             List<ProductResponseDTO> productDtos = new ArrayList<>();
             for (Product product : category.getProducts()) {
-                LocalDateTime productDate = product.getCreationDate();
-                String formattedProductDate = productDate.format(formatter);
+                String[] datesProduct = formatDate(product);
                 ProductResponseDTO productDto = new ProductResponseDTO(
                         product.getId(),
                         product.getName(),
                         product.getDescription(),
-                        formattedProductDate,
+                        datesProduct[0],
+                        datesProduct[1],
                         category.getName()
                 );
                 productDtos.add(productDto);
@@ -64,7 +66,8 @@ public class CategoryController {
                     category.getId(),
                     category.getName(),
                     category.getDescription(),
-                    formattedDate,
+                    datesCategory[0],
+                    datesCategory[1],
                     productDtos
             );
             categoryDtos.add(categoryDto);
@@ -75,14 +78,14 @@ public class CategoryController {
     @GetMapping("/{id}")
     public CategoryResponseDTO getById(@PathVariable Long id) {
         Category category = categoryService.getById(id);
-        LocalDateTime date = category.getCreationDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDate = date.format(formatter);
+        logger.info("{}", category.getUpdateDate());
+        String[] dates = formatDate(category);
         CategoryResponseDTO categoryDto = new CategoryResponseDTO(
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                formattedDate
+                dates[0],
+                dates[1]
         );
         return categoryDto;
     }
@@ -90,18 +93,16 @@ public class CategoryController {
     @GetMapping("/details/{id}")
     public CategoryDetailsResponseDTO getByIdDetails(@PathVariable Long id) {
         Category category = categoryService.getById(id);
-        LocalDateTime date = category.getCreationDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDate = date.format(formatter);
+        String[] datesCategory = formatDate(category);
         List<ProductResponseDTO> productDtos = new ArrayList<>();
         for (Product product : category.getProducts()) {
-            LocalDateTime productDate = product.getCreationDate();
-            String formattedProductDate = productDate.format(formatter);
+            String[] datesProduct = formatDate(product);
             ProductResponseDTO productDto = new ProductResponseDTO(
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
-                    formattedProductDate,
+                    datesProduct[0],
+                    datesProduct[1],
                     category.getName()
             );
             productDtos.add(productDto);
@@ -110,7 +111,8 @@ public class CategoryController {
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                formattedDate,
+                datesCategory[0],
+                datesCategory[1],
                 productDtos
         );
         return categoryDto;
@@ -124,12 +126,38 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody CategoryRequestDTO categoryDto) {
-        Category category = new Category(categoryDto.getName(), categoryDto.getDescription(), LocalDateTime.now());
+        Category categoryToUpdate = categoryService.getById(id);
+        Category category = new Category(
+                categoryDto.getName(),
+                categoryDto.getDescription(),
+                categoryToUpdate.getCreationDate(),
+                LocalDateTime.now()
+        );
         categoryService.update(id, category);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         categoryService.delete(id);
+    }
+
+    public String[] formatDate(GenericData genericData) {
+        String[] dates = new String[2];
+        LocalDateTime creationDate = genericData.getCreationDate();
+        LocalDateTime updateDate = genericData.getUpdateDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        if (creationDate == null) {
+            dates[0] = "";
+        }
+        else {
+            dates[0] = creationDate.format(formatter);
+        }
+        if (updateDate == null) {
+            dates[1] = "";
+        }
+        else {
+            dates[1] = updateDate.format(formatter);
+        }
+        return dates;
     }
 }

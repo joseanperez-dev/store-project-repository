@@ -7,15 +7,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-public class Product {
+public class Product extends GenericData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    String name;
-    String description;
-
-    LocalDateTime creationDate;
 
     @ManyToOne
     @JoinColumn(name = "category")
@@ -36,6 +31,14 @@ public class Product {
         this.name = name;
         this.description = description;
         this.creationDate = creationDate;
+        this.category = category;
+    }
+
+    public Product(String name, String description, LocalDateTime creationDate, LocalDateTime updateDate, Category category) {
+        this.name = name;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.updateDate = updateDate;
         this.category = category;
     }
 
@@ -69,6 +72,14 @@ public class Product {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
     public Category getCategory() {

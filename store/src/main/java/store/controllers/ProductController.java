@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import store.dto.ProductRequestDTO;
 import store.dto.ProductResponseDTO;
 import store.models.Category;
+import store.models.GenericData;
 import store.models.Product;
 import store.services.CategoryService;
 import store.services.ProductService;
@@ -29,15 +30,14 @@ public class ProductController {
         List<Product> products = productService.getAll();
         List<ProductResponseDTO> productDtos = new ArrayList<>();
         for (Product product : products) {
-            LocalDateTime date = product.getCreationDate();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            String formattedDate = date.format(formatter);
+            String[] dates = formatDate(product);
             ProductResponseDTO productDto = new ProductResponseDTO(
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
-                    formattedDate,
-                    product.getCategory().getName()
+                    product.getCategory().getName(),
+                    dates[0],
+                    dates[1]
             );
             productDtos.add(productDto);
         }
@@ -47,22 +47,24 @@ public class ProductController {
     @GetMapping("/{id}")
     public ProductResponseDTO getById(@PathVariable Long id) {
         Product product = productService.getById(id);
-        LocalDateTime date = product.getCreationDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDate = date.format(formatter);
+        String[] dates = formatDate(product);
         ProductResponseDTO productDto = new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
-                formattedDate,
-                product.getCategory().getName()
+                product.getCategory().getName(),
+                dates[0],
+                dates[1]
         );
         return productDto;
     }
 
     @PostMapping
-    public void add(@RequestBody ProductRequestDTO productDto) {
+    public void add(@RequestBody ProductRequestDTO productDto) throws Exception {
         Category category = categoryService.getById(productDto.getCategoryId());
+        if (category == null) {
+            throw new Exception("La categoría no existe");
+        }
         Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now(), category);
         productService.add(product);
     }
@@ -70,12 +72,33 @@ public class ProductController {
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody ProductRequestDTO productDto) {
         Category category = categoryService.getById(productDto.getCategoryId());
-        Product product = new Product(productDto.getName(), productDto.getDescription(), LocalDateTime.now(), category);
+        Product productToUpdate = productService.getById(id);
+        Product product = new Product(
+                productDto.getName(),
+                productDto.getDescription(),
+                productToUpdate.getCreationDate(),
+                LocalDateTime.now(), category
+        );
         productService.update(id, product);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
+    }
+
+    public String[] formatDate(GenericData genericData) {
+        String[] dates = new String[2];
+        LocalDateTime creationDate = genericData.getCreationDate();
+        LocalDateTime updateDate = genericData.getUpdateDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        dates[0] = creationDate.format(formatter);
+        if (updateDate == null) {
+            dates[1] = "";
+        }
+        else {
+            dates[1] = updateDate.format(formatter);
+        }
+        return dates;
     }
 }

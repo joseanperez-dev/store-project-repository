@@ -3,8 +3,8 @@ package store.dto;
 public class ProductResponseDTO extends ResponseDTO {
     public String categoryName;
 
-    public ProductResponseDTO(Long id, String name, String description, String creationDate, String categoryName) {
-        super(id, name, description, creationDate);
+    public ProductResponseDTO(Long id, String name, String description, String categoryName, String creationDate, String updateName) {
+        super(id, name, description, creationDate, updateName);
         this.categoryName = categoryName;
     }
 

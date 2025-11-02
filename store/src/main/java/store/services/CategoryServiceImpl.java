@@ -39,6 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category categoryToUpdate = getById(id);
         categoryToUpdate.setName(category.getName());
         categoryToUpdate.setDescription(category.getDescription());
+        categoryToUpdate.setUpdateDate(category.getUpdateDate());
         categoryRepo.save(categoryToUpdate);
     }
 

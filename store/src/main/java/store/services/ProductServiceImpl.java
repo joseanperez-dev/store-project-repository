@@ -39,6 +39,7 @@ public class ProductServiceImpl implements ProductService {
         Product productToUpdate = getById(id);
         productToUpdate.setName(product.getName());
         productToUpdate.setDescription(product.getDescription());
+        productToUpdate.setUpdateDate(product.getUpdateDate());
         productRepo.save(productToUpdate);
     }
 

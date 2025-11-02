@@ -5,12 +5,14 @@ public class ResponseDTO {
     public String name;
     public String description;
     public String creationDate;
+    public String updateDate;
 
-    public ResponseDTO(Long id, String name, String description, String creationDate) {
+    public ResponseDTO(Long id, String name, String description, String creationDate, String updateDate) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.creationDate = creationDate;
+        this.updateDate = updateDate;
     }
 
     public Long getId() {
@@ -43,5 +45,13 @@ public class ResponseDTO {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
     }
 }
