@@ -2,8 +2,11 @@ package store.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.dto.*;
+import store.exceptions.CategoryNotFoundException;
 import store.models.Category;
 import store.models.GenericData;
 import store.models.Product;
@@ -78,71 +81,95 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public CategoryResponseDTO getById(@PathVariable Long id) {
-        Category category = categoryService.getById(id);
-        logger.info("{}", category.getUpdateDate());
-        String[] dates = formatDate(category);
-        CategoryResponseDTO categoryDto = new CategoryResponseDTO(
-                category.getId(),
-                category.getName(),
-                category.getDescription(),
-                dates[0],
-                dates[1]
-        );
-        return categoryDto;
+    public ResponseEntity<Object> getById(@PathVariable Long id) {
+        try {
+            Category category = categoryService.getById(id);
+            logger.info("{}", category.getUpdateDate());
+            String[] dates = formatDate(category);
+            CategoryResponseDTO categoryDto = new CategoryResponseDTO(
+                    category.getId(),
+                    category.getName(),
+                    category.getDescription(),
+                    dates[0],
+                    dates[1]
+            );
+            return ResponseEntity.ok(categoryDto);
+        }
+        catch (CategoryNotFoundException categoryNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(categoryNotFoundException.getMessage());
+        }
     }
 
     @GetMapping("/details/{id}")
-    public CategoryDetailsResponseDTO getByIdDetails(@PathVariable Long id) {
-        Category category = categoryService.getById(id);
-        String[] datesCategory = formatDate(category);
-        List<ProductResponseDTO> productDtos = new ArrayList<>();
-        for (Product product : category.getProducts()) {
-            String[] datesProduct = formatDate(product);
-            ProductResponseDTO productDto = new ProductResponseDTO(
-                    product.getId(),
-                    product.getName(),
-                    product.getDescription(),
+    public ResponseEntity<Object> getByIdDetails(@PathVariable Long id) {
+        try {
+            Category category = categoryService.getById(id);
+            String[] datesCategory = formatDate(category);
+            List<ProductResponseDTO> productDtos = new ArrayList<>();
+            for (Product product : category.getProducts()) {
+                String[] datesProduct = formatDate(product);
+                ProductResponseDTO productDto = new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getDescription(),
+                        category.getName(),
+                        product.getPrice(),
+                        product.getStock(),
+                        datesProduct[0],
+                        datesProduct[1]
+                );
+                productDtos.add(productDto);
+            }
+            CategoryDetailsResponseDTO categoryDto = new CategoryDetailsResponseDTO(
+                    category.getId(),
                     category.getName(),
-                    product.getPrice(),
-                    product.getStock(),
-                    datesProduct[0],
-                    datesProduct[1]
+                    category.getDescription(),
+                    datesCategory[0],
+                    datesCategory[1],
+                    productDtos
             );
-            productDtos.add(productDto);
+            return ResponseEntity.ok(categoryDto);
         }
-        CategoryDetailsResponseDTO categoryDto = new CategoryDetailsResponseDTO(
-                category.getId(),
-                category.getName(),
-                category.getDescription(),
-                datesCategory[0],
-                datesCategory[1],
-                productDtos
-        );
-        return categoryDto;
+        catch (CategoryNotFoundException categoryNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(categoryNotFoundException.getMessage());
+        }
     }
 
     @PostMapping
-    public void add(@RequestBody CategoryRequestDTO categoryDto) {
+    public ResponseEntity<Object> add(@RequestBody CategoryRequestDTO categoryDto) {
         Category category = new Category(categoryDto.getName(), categoryDto.getDescription(), LocalDateTime.now());
         categoryService.add(category);
+        return ResponseEntity.ok("La categoría " + category.getName() + " se ha creado correctamente.");
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody CategoryRequestDTO categoryDto) {
-        Category categoryToUpdate = categoryService.getById(id);
-        Category category = new Category(
-                categoryDto.getName(),
-                categoryDto.getDescription(),
-                categoryToUpdate.getCreationDate(),
-                LocalDateTime.now()
-        );
-        categoryService.update(id, category);
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody CategoryRequestDTO categoryDto) {
+        try {
+            Category categoryToUpdate = categoryService.getById(id);
+            Category category = new Category(
+                    categoryDto.getName(),
+                    categoryDto.getDescription(),
+                    categoryToUpdate.getCreationDate(),
+                    LocalDateTime.now()
+            );
+            categoryService.update(id, category);
+            return ResponseEntity.ok(categoryDto);
+        }
+        catch (CategoryNotFoundException categoryNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(categoryNotFoundException.getMessage());
+        }
+
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        categoryService.delete(id);
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        try {
+            categoryService.delete(id);
+            return ResponseEntity.ok("La categoría se ha eliminado correctamente.");
+        }
+        catch (CategoryNotFoundException categoryNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(categoryNotFoundException.getMessage());
+        }
     }
 
     public String[] formatDate(GenericData genericData) {

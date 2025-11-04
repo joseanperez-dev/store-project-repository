@@ -1,6 +1,7 @@
 package store.services;
 
 import org.springframework.stereotype.Service;
+import store.exceptions.ProductNotFoundException;
 import store.models.Product;
 import store.repositories.ProductRepository;
 
@@ -26,7 +27,7 @@ public class ProductServiceImpl implements ProductService {
         if (optionalProduct.isPresent()) {
             return optionalProduct.get();
         }
-        return null;
+        throw new ProductNotFoundException("No se ha podido encontrar el producto con Id: " + id);
     }
 
     @Override

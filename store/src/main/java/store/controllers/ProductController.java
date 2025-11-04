@@ -1,8 +1,13 @@
 package store.controllers;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.dto.ProductRequestDTO;
 import store.dto.ProductResponseDTO;
+import store.exceptions.CategoryNotFoundException;
+import store.exceptions.ProductNotFoundException;
 import store.models.Category;
 import store.models.GenericData;
 import store.models.Product;
@@ -47,57 +52,77 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductResponseDTO getById(@PathVariable Long id) {
-        Product product = productService.getById(id);
-        String[] dates = formatDate(product);
-        ProductResponseDTO productDto = new ProductResponseDTO(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getCategory().getName(),
-                product.getPrice(),
-                product.getStock(),
-                dates[0],
-                dates[1]
-        );
-        return productDto;
+    public ResponseEntity<Object> getById(@PathVariable Long id) {
+        try {
+            Product product = productService.getById(id);
+            String[] dates = formatDate(product);
+            ProductResponseDTO productDto = new ProductResponseDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getCategory().getName(),
+                    product.getPrice(),
+                    product.getStock(),
+                    dates[0],
+                    dates[1]
+            );
+            return ResponseEntity.ok(productDto);
+        }
+        catch (ProductNotFoundException productNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productNotFoundException.getMessage());
+        }
     }
 
     @PostMapping
-    public void add(@RequestBody ProductRequestDTO productDto) throws Exception {
-        Category category = categoryService.getById(productDto.getCategoryId());
-        if (category == null) {
-            throw new Exception("La categoría no existe");
+    public ResponseEntity<Object> add(@RequestBody ProductRequestDTO productDto) throws Exception {
+        try {
+            Category category = categoryService.getById(productDto.getCategoryId());
+            Product product = new Product(
+                    productDto.getName(),
+                    productDto.getDescription(),
+                    productDto.getPrice(),
+                    productDto.getStock(),
+                    LocalDateTime.now(),
+                    category
+            );
+            productService.add(product);
+            return ResponseEntity.ok("El producto " + product.getName() + " se ha creado correctamente.");
         }
-        Product product = new Product(
-                productDto.getName(),
-                productDto.getDescription(),
-                productDto.getPrice(),
-                productDto.getStock(),
-                LocalDateTime.now(),
-                category
-        );
-        productService.add(product);
+        catch (CategoryNotFoundException categoryNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(categoryNotFoundException.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody ProductRequestDTO productDto) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody ProductRequestDTO productDto) {
         Category category = categoryService.getById(productDto.getCategoryId());
-        Product productToUpdate = productService.getById(id);
-        Product product = new Product(
-                productDto.getName(),
-                productDto.getDescription(),
-                productDto.getPrice(),
-                productDto.getStock(),
-                productToUpdate.getCreationDate(),
-                LocalDateTime.now(), category
-        );
-        productService.update(id, product);
+        try {
+            Product productToUpdate = productService.getById(id);
+            Product product = new Product(
+                    productDto.getName(),
+                    productDto.getDescription(),
+                    productDto.getPrice(),
+                    productDto.getStock(),
+                    productToUpdate.getCreationDate(),
+                    LocalDateTime.now(), category
+            );
+            productService.update(id, product);
+            return ResponseEntity.ok(productDto);
+        }
+        catch (ProductNotFoundException productNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productNotFoundException.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        productService.delete(id);
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        try {
+            productService.delete(id);
+            return ResponseEntity.ok("El producto se ha eliminado correctamente.");
+        }
+        catch (ProductNotFoundException productNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productNotFoundException.getMessage());
+        }
     }
 
     public String[] formatDate(GenericData genericData) {

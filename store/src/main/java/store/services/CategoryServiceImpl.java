@@ -1,6 +1,7 @@
 package store.services;
 
 import org.springframework.stereotype.Service;
+import store.exceptions.CategoryNotFoundException;
 import store.models.Category;
 import store.repositories.CategoryRepository;
 
@@ -26,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (optionalCategory.isPresent()) {
             return optionalCategory.get();
         }
-        return null;
+        throw new CategoryNotFoundException("No se ha podido encontrar la categoría con Id: " + id);
     }
 
     @Override

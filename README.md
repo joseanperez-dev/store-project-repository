@@ -1,5 +1,7 @@
 # FASE 01
 
+## Excepciones básicas
+
 ## Relación Product y Category
 
 En esta etapa de la fase 1 se va a implementar todo lo relacionado con la entidad Category: repositorio, servicio, controlador y DTOs.
