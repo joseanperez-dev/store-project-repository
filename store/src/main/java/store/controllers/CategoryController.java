@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.dto.*;
+import store.exceptions.CategoryAlreadyExistsException;
 import store.exceptions.CategoryNotFoundException;
 import store.models.Category;
 import store.models.GenericData;
@@ -138,8 +139,13 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody CategoryRequestDTO categoryDto) {
         Category category = new Category(categoryDto.getName(), categoryDto.getDescription(), LocalDateTime.now());
-        categoryService.add(category);
-        return ResponseEntity.ok("La categoría " + category.getName() + " se ha creado correctamente.");
+        try {
+            categoryService.add(category);
+            return ResponseEntity.ok("La categoría " + category.getName() + " se ha creado correctamente.");
+        }
+        catch (CategoryAlreadyExistsException categoryAlreadyExistsException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(categoryAlreadyExistsException.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

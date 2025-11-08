@@ -1,6 +1,7 @@
 package store.services;
 
 import org.springframework.stereotype.Service;
+import store.exceptions.CategoryAlreadyExistsException;
 import store.exceptions.CategoryNotFoundException;
 import store.models.Category;
 import store.repositories.CategoryRepository;
@@ -31,7 +32,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category getByName(String name) {
+        Optional<Category> optionalCategory = categoryRepo.findByName(name);
+        if (optionalCategory.isPresent()) {
+            return optionalCategory.get();
+        }
+        throw new CategoryNotFoundException("No se ha podido encontrar la categoría con nombre: " + name);
+    }
+
+    @Override
     public void add(Category category) {
+        if (categoryRepo.findByName(category.getName()).isPresent()) {
+            throw new CategoryAlreadyExistsException("La categoría " + category.getName() + " ya existe.");
+        }
         categoryRepo.save(category);
     }
 
