@@ -1,6 +1,7 @@
 package store.services;
 
 import org.springframework.stereotype.Service;
+import store.exceptions.ProductAlreadyExistsException;
 import store.exceptions.ProductNotFoundException;
 import store.models.Product;
 import store.repositories.ProductRepository;
@@ -31,7 +32,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product getByName(String name) {
+        Optional<Product> optionalProduct = productRepo.findByName(name);
+        if (optionalProduct.isPresent()) {
+            return optionalProduct.get();
+        }
+        throw new ProductNotFoundException("No se ha podido encontrar el producto con nombre: " + name);
+    }
+
+    @Override
     public void add(Product product) {
+        if (productRepo.findByName(product.getName()).isPresent()) {
+            throw new ProductAlreadyExistsException("El producto " + product.getName() + " ya existe.");
+        }
         productRepo.save(product);
     }
 

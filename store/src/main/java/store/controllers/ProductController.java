@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import store.dto.ProductRequestDTO;
 import store.dto.ProductResponseDTO;
 import store.exceptions.CategoryNotFoundException;
+import store.exceptions.ProductAlreadyExistsException;
 import store.exceptions.ProductNotFoundException;
 import store.models.Category;
 import store.models.GenericData;
@@ -85,8 +86,13 @@ public class ProductController {
                     LocalDateTime.now(),
                     category
             );
-            productService.add(product);
-            return ResponseEntity.ok("El producto " + product.getName() + " se ha creado correctamente.");
+            try {
+                productService.add(product);
+                return ResponseEntity.ok("El producto " + product.getName() + " se ha creado correctamente.");
+            }
+            catch (ProductAlreadyExistsException productAlreadyExistsException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productAlreadyExistsException.getMessage());
+            }
         }
         catch (CategoryNotFoundException categoryNotFoundException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(categoryNotFoundException.getMessage());
