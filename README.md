@@ -1,3 +1,12 @@
+# FASE 02
+
+## Añadiendo registry-service
+
+Comenzando esta segunda fase del proyecto, vamos a empezar a despedazar el proyecto **store** en pequeños proyectos (servicios) para ir transformando lentamente el proyecto monolítico en un proyecto de microservicios.
+Para ello, el primer paso que vamos a dar es añadir un proyecto llamada **registry-server**, cuya dependencia principal es la de **Eureka Server** (FALTA PONER ENLACE).
+
+Eureka Server nos permitirá registrar los servicios de la aplicación.
+
 # FASE 01
 
 ## Excepciones básicas
@@ -10,6 +19,8 @@ Para tener un control de errores más personalizado, se han creado de momento un
 - ProductAlreadyExistsException
 
 De momento solo lanzan un mensaje de error para ayudar a localizar cualquier error en ejecución, pero más adelante se desarrollarán más estas excepciones y otras que se vayan creando.
+
+También se han añadido varios tests para Product y Category, aunque de momento están incompletos ya que faltan los de update y delete.
 
 ## Relación Product y Category
 
