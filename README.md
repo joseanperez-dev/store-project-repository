@@ -2,6 +2,15 @@
 
 ## Excepciones básicas
 
+Para tener un control de errores más personalizado, se han creado de momento unas cuantas excepciones:
+
+- CategoryNotFoundException
+- ProductNotFoundException
+- CategoryAlreadyExistsException
+- ProductAlreadyExistsException
+
+De momento solo lanzan un mensaje de error para ayudar a localizar cualquier error en ejecución, pero más adelante se desarrollarán más estas excepciones y otras que se vayan creando.
+
 ## Relación Product y Category
 
 En esta etapa de la fase 1 se va a implementar todo lo relacionado con la entidad Category: repositorio, servicio, controlador y DTOs.
